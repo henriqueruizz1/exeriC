@@ -1,0 +1,97 @@
+ExercicioC
+
+Henrique Ruiz Nunes - 8161044
+19/10/2024
+
+Função: mostrar cédulas e realizar o saque 
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+void mostrarCedulas(const vector<int>& cedulas) {
+    cout << "R$ 100 R$ 50 R$ 20 R$ 10 R$ 5 R$ 2 R$ 1 Total\n";
+    int total = 0;
+    for (int i = 0; i < cedulas.size(); i++) {
+        cout << cedulas[i] << " ";
+        total += cedulas[i] * (100 / (1 << i));
+    }
+    cout << total << endl;
+}
+
+bool fazerSaque(int valor, vector<int>& cedulas) {
+    int notas[7] = {100, 50, 20, 10, 5, 2, 1};
+    vector<int> saque(7, 0);
+    int i;
+
+    for (i = 0; i < 7; i++) {
+        if (valor >= notas[i]) {
+            int necessario = valor / notas[i];
+            if (necessario <= cedulas[i]) {
+                saque[i] = necessario;
+                valor -= saque[i] * notas[i];
+            } else {
+                saque[i] = cedulas[i];
+                valor -= saque[i] * notas[i];
+            }
+        }
+    }
+
+    if (valor > 0) {
+        cout << "Saque de R$ " << valor << " não realizado por falta de cédulas" << endl;
+        return false;
+    }
+
+    for (i = 0; i < 7; i++) {
+        cedulas[i] -= saque[i];
+    }
+
+    cout << "Saque de R$ " << valor << " efetuado" << endl;
+    return true;
+}
+
+void fazerDeposito(vector<int>& cedulas, const vector<int>& deposito) {
+    for (int i = 0; i < 7; i++) {
+        cedulas[i] += deposito[i];
+    }
+
+    int total = 0;
+    for (int i = 0; i < 7; i++) {
+        total += deposito[i] * (100 / (1 << i));
+    }
+
+    cout << "Depósito de R$ " << total << endl;
+}
+
+int main() {
+    vector<int> cedulas(7);
+    vector<int> deposito(7);
+
+    for (int i = 0; i < 7; i++) {
+        cin >> cedulas[i];
+    }
+
+    mostrarCedulas(cedulas);
+
+    int operacao, valor;
+    while (true) {
+        cin >> operacao;
+        if (operacao == -1) {
+            break;
+        }
+
+        if (operacao == 0) {
+            cin >> valor;
+            fazerSaque(valor, cedulas);
+        } else if (operacao == 1) {
+            for (int i = 0; i < 7; i++) {
+                cin >> deposito[i];
+            }
+            fazerDeposito(cedulas, deposito);
+        }
+
+        mostrarCedulas(cedulas);
+    }
+
+    return 0;
+}
